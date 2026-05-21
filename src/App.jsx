@@ -1,0 +1,729 @@
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, AuthContext } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
+import MainLayout from './components/layout/MainLayout';
+import ErrorBoundary from './components/common/ErrorBoundary';
+
+
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="text-center">
+      <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-slate-600">Loading...</p>
+    </div>
+  </div>
+);
+const Login = lazy(() => import('./pages/Login'));
+const AdminDashboard = lazy(() => import('./pages/admin/EnhancedDashboard'));
+const EmployeeDashboard = lazy(() => import('./pages/employee/Dashboard'));
+const InventoryList = lazy(() => import('./pages/inventory/InventoryList'));
+const InventoryForm = lazy(() => import('./pages/inventory/InventoryForm'));
+const InventoryDetail = lazy(() => import('./pages/inventory/InventoryDetail'));
+const Stock = lazy(() => import('./pages/inventory/Stock'));
+const OrdersList = lazy(() => import('./pages/orders/OrdersList'));
+const OrderDetail = lazy(() => import('./pages/orders/OrderDetail'));
+const OrderVerification = lazy(() => import('./pages/orders/OrderVerification'));
+const ManualOrderForm = lazy(() => import('./pages/orders/ManualOrderForm'));
+const PendingInvoices = lazy(() => import('./pages/routestar/PendingInvoices'));
+const ClosedInvoices = lazy(() => import('./pages/routestar/ClosedInvoices'));
+const RouteStarInvoiceDetail = lazy(() => import('./pages/routestar/RouteStarInvoiceDetail'));
+const ModelCategoryMapping = lazy(() => import('./pages/routestar/ModelCategoryMapping'));
+const ItemNameAliasMapping = lazy(() => import('./pages/routestar/ItemNameAliasMapping'));
+const ManualPOItems = lazy(() => import('./pages/routestar/ManualPOItems'));
+const VendorManagement = lazy(() => import('./pages/vendors/VendorManagement'));
+const RouteStarItemsList = lazy(() => import('./pages/routestar/RouteStarItemsList'));
+const RouteStarCustomersList = lazy(() => import('./pages/routestar/RouteStarCustomersList'));
+const RouteStarCustomerDetail = lazy(() => import('./pages/routestar/RouteStarCustomerDetail'));
+const RouteStarClosedInvoiceCustomers = lazy(() => import('./pages/routestar/RouteStarClosedInvoiceCustomers'));
+const GoAuditsLocations = lazy(() => import('./pages/goaudits/GoAuditsLocations'));
+const RouteStarSalesReport = lazy(() => import('./pages/routestar/SalesReport'));
+const ItemsInvoiceUsage = lazy(() => import('./pages/routestar/ItemsInvoiceUsage'));
+const PointOfSale = lazy(() => import('./pages/pos/PointOfSale'));
+const Categories = lazy(() => import('./pages/categories/Categories'));
+const Units = lazy(() => import('./pages/units/Units'));
+const CouponsAndPayments = lazy(() => import('./pages/coupons/CouponsAndPayments'));
+const InvoiceList = lazy(() => import('./pages/invoices/InvoiceList'));
+const InvoiceForm = lazy(() => import('./pages/invoices/InvoiceForm'));
+const InvoiceDetail = lazy(() => import('./pages/invoices/InvoiceDetail'));
+const Approvals = lazy(() => import('./pages/approvals/Approvals'));
+const UserList = lazy(() => import('./pages/admin/UserList'));
+const UserForm = lazy(() => import('./pages/admin/UserForm'));
+const ScreenManagement = lazy(() => import('./pages/admin/ScreenManagement'));
+const Reports = lazy(() => import('./pages/reports/Reports'));
+const SalesReport = lazy(() => import('./pages/reports/SalesReport'));
+const ToastDemo = lazy(() => import('./pages/ToastDemo'));
+const ErrorBoundaryDemo = lazy(() => import('./pages/ErrorBoundaryDemo'));
+const LowStockReport = lazy(() => import('./pages/reports/LowStockReport'));
+const CustomerExport = lazy(() => import('./pages/reports/CustomerExport'));
+const UserProfile = lazy(() => import('./pages/profile/UserProfile'));
+const Settings = lazy(() => import('./pages/settings/Settings'));
+const Trash = lazy(() => import('./pages/trash/Trash'));
+const EmployeeActivities = lazy(() => import('./pages/activities/EmployeeActivities'));
+const FetchHistory = lazy(() => import('./pages/system/FetchHistory'));
+const QuickBooksSync = lazy(() => import('./pages/system/QuickBooksSync'));
+const EmployeeWorkDashboard = lazy(() => import('./pages/employee/EmployeeWorkDashboard'));
+const TruckCheckoutList = lazy(() => import('./pages/truck-checkout/TruckCheckoutList'));
+const TruckCheckoutForm = lazy(() => import('./pages/truck-checkout/TruckCheckoutForm'));
+const TruckCheckoutShop = lazy(() => import('./pages/truck-checkout/TruckCheckoutShop'));
+const TruckCheckoutDetail = lazy(() => import('./pages/truck-checkout/TruckCheckoutDetail'));
+const EmployeeCheckouts = lazy(() => import('./pages/truck-checkout/EmployeeCheckouts'));
+const DiscrepancyPage = lazy(() => import('./pages/admin/DiscrepancyPage'));
+const ScreenPermissionsManagement = lazy(() => import('./pages/admin/ScreenPermissionsManagement'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const ProtectedRoute = ({ children, requireAdmin = false }) => {
+  const { isAuthenticated, isAdmin, loading } = React.useContext(AuthContext);
+  if (loading) {
+    return <LoadingFallback />;
+  }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  if (requireAdmin && !isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <MainLayout>{children}</MainLayout>;
+};
+const DashboardRoute = () => {
+  const { isAdmin, loading } = React.useContext(AuthContext);
+  if (loading) {
+    return <LoadingFallback />;
+  }
+  if (isAdmin) {
+    return <AdminDashboard />;
+  } else {
+    return <EmployeeDashboard />;
+  }
+};
+const RootRoute = () => {
+  const { isAuthenticated, loading } = React.useContext(AuthContext);
+  if (loading) {
+    return <LoadingFallback />;
+  }
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <Navigate to="/login" replace />;
+};
+function App() {
+  return (
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <Router>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                {}
+                <Route
+                  path="/"
+                  element={
+                    <ErrorBoundary>
+                      <RootRoute />
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/login"
+                  element={
+                    <ErrorBoundary>
+                      <Login />
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <DashboardRoute />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/inventory"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <InventoryList />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/stock"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <Stock />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/discrepancies"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <DiscrepancyPage />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/orders"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <OrdersList />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/orders/create"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <ManualOrderForm />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/orders/:orderNumber"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <OrderDetail />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/orders/verify/:orderId"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <OrderVerification />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/inventory/new"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <InventoryForm />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/inventory/:id"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <InventoryDetail />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/inventory/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <InventoryForm />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/pos"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <PointOfSale />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/categories"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <Categories />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/units"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <Units />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/coupons"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <CouponsAndPayments />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/invoices"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <InvoiceList />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/invoices/new"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <InvoiceForm />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/invoices/:id"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <InvoiceDetail />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/invoices/routestar/pending"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <PendingInvoices />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/invoices/routestar/closed"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <ClosedInvoices />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/invoices/routestar/:invoiceNumber"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <RouteStarInvoiceDetail />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/routestar/model-mapping"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <ModelCategoryMapping />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/routestar/item-alias-mapping"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <ItemNameAliasMapping />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/routestar/items"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <RouteStarItemsList />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/routestar/customers"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <RouteStarCustomersList />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/routestar/customers/:customerId"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <RouteStarCustomerDetail />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/routestar/closed-invoice-customers"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <RouteStarClosedInvoiceCustomers />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/goaudits/locations"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <GoAuditsLocations />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/manual-po-items"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <ManualPOItems />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/vendors"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <VendorManagement />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/routestar/sales-report"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <RouteStarSalesReport />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/routestar/items-invoice-usage"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <ItemsInvoiceUsage />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/approvals"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <Approvals />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/users"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <UserList />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/users/new"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <UserForm />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/users/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <UserForm />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {/* Screen Permissions Management */}
+                <Route
+                  path="/admin/screen-permissions"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <ScreenPermissionsManagement />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {/* Screen Management */}
+                <Route
+                  path="/admin/screens"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <ScreenManagement />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/reports"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <Reports />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/reports/sales"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <SalesReport />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/reports/low-stock"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <LowStockReport />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/reports/customer-export"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <CustomerExport />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/settings"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <Settings />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/toast-demo"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <ToastDemo />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/error-boundary-demo"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <ErrorBoundaryDemo />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/trash"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <Trash />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/activities"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <EmployeeActivities />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/system/fetch-history"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <FetchHistory />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/system/quickbooks-sync"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute requireAdmin>
+                        <QuickBooksSync />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/profile"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <UserProfile />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/my-work"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <EmployeeWorkDashboard />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="/truck-checkouts"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <TruckCheckoutList />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/truck-checkouts/new"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <TruckCheckoutForm />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/truck-checkouts/employee/:employeeName"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <EmployeeCheckouts />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/truck-checkouts/:id"
+                  element={
+                    <ErrorBoundary>
+                      <ProtectedRoute>
+                        <TruckCheckoutDetail />
+                      </ProtectedRoute>
+                    </ErrorBoundary>
+                  }
+                />
+                {}
+                <Route
+                  path="*"
+                  element={
+                    <ErrorBoundary>
+                      <NotFound />
+                    </ErrorBoundary>
+                  }
+                />
+              </Routes>
+            </Suspense>
+          </Router>
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
+  );
+}
+export default App;
